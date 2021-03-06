@@ -16,7 +16,7 @@ def return_session(request):
 
 def return_order_and_items(request):
     """
-    This func takes request and returns for both auth and unauth users.
+    This func takes request and returns for both auth and unauth users: customer, items, customer
     :param request:
     :return: Query obj (tuple)
     """
@@ -27,10 +27,10 @@ def return_order_and_items(request):
     else:
         session_key = return_session(request)
         customer, created = Customer.objects.get_or_create(as_guest=session_key)
-        order, created = Order.objects.get_or_create(customer=customer, complete=False, transaction_id=123)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
         items = order.orderitem_set.all()
 
-    return order, items
+    return order, items, customer
 
 
 

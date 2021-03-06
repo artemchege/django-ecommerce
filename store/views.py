@@ -12,20 +12,20 @@ from .decorators import if_unauthenticated
 
 
 def store(request):
-    order, items = return_order_and_items(request)
+    order, items, customer = return_order_and_items(request)
     products = Product.objects.all()
     context = {'products': products, 'items': items, 'order': order}
     return render(request, 'store/store.html', context)
 
 
 def cart(request):
-    order, items = return_order_and_items(request)
+    order, items, customer = return_order_and_items(request)
     context = {'items': items, 'order': order}
     return render(request, 'store/cart.html', context)
 
 
 def checkout(request):
-    order, items = return_order_and_items(request)
+    order, items, customer = return_order_and_items(request)
     shipping_form = ShippingForm()
     context = {'items': items, 'order': order, 'shipping_form': shipping_form}
     return render(request, 'store/checkout.html', context)
@@ -38,19 +38,12 @@ def update_cart(request):
             product_id = request.POST['id']
             action = request.POST['action']
 
-            # if request.user.is_authenticated:
-            #     customer = request.user.customer
-            # else:
-            #     session_key = return_session(request)
-            #     customer, created = Customer.objects.get_or_create(as_guest=session_key)
-            order, items = return_order_and_items(request)
+            order, items, customer = return_order_and_items(request)
 
             try:
                 product = Product.objects.get(id=product_id)
             except ObjectDoesNotExist:
                 return JsonResponse(status=422, data={'error': 'you must provide valid id'})
-
-            # order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
             order_item, created = OrderItem.objects.get_or_create(order=order, product=product)
 
@@ -77,11 +70,14 @@ def validate_form(request):
     if request.method == "POST":
         form = ShippingForm(request.POST)
 
-        if request.user.is_authenticated:
-            customer = request.user.customer
-        else:
-            session_key = return_session(request)
-            customer, created = Customer.objects.get_or_create(as_guest=session_key)
+        # if request.user.is_authenticated:
+        #     customer = request.user.customer
+        # else:
+        #     session_key = return_session(request)
+        #     customer, created = Customer.objects.get_or_create(as_guest=session_key)
+
+        order, items, customer = return_order_and_items(request)
+        if customer.as_guest:
 
             if request.POST.get('name'):
                 name = request.POST.get('name')
@@ -94,10 +90,9 @@ def validate_form(request):
                     return JsonResponse(status=400, data={'error': 'This email is already occupied, try another'})
                 customer.email = email
 
-            # print('Creating or updating new Customer with')
             customer.save()
 
-        order = customer.order_set.get(customer=customer)
+        # order = customer.order_set.get(customer=customer, complete=False)
 
         if order.shipping:
             if form.is_valid():
@@ -125,16 +120,7 @@ def completed_order(request):
     :param request:
     :return: render template
     """
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all()
-    else:
-        session_key = return_session(request)
-        customer, created = Customer.objects.get_or_create(as_guest=session_key)
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        items = order.orderitem_set.all()
-
+    order, items, customer = return_order_and_items(request)
     # order.transaction_id = take_this_from_payment_response
     order.complete = True
     order.save()
@@ -176,8 +162,6 @@ def login_view(request):
 
 @if_unauthenticated
 def registration_view(request):
-    # print('registration_view', request.POST)
-
     form = CreateUserForm()
 
     if request.method == 'POST':
@@ -196,7 +180,6 @@ def registration_view(request):
 @login_required(login_url='login')
 def logout_view(request):
     logout(request)
-    context = {}
     return redirect('login')
 
 
