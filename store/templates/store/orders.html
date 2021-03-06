@@ -1,0 +1,41 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="row">
+
+    <div class="col-lg-12">
+        <div class="box-element">
+            <table class="table">
+                <tr>
+                    <th>№</th>
+                    <th>Status</th>
+                    <th>Quantity</th>
+                    <th>Sum</th>
+                </tr>
+
+                {% for order in orders %}
+                <tr>
+                    <th>{{ order.id }}</th>
+                    <th>
+                        {% if order.complete %}
+                            Completed
+                        {% else %}
+                            In progress
+                        {% endif %}
+                    </th>
+                    <th>{{ order.get_item_total }}</th>
+                    <th>{{ order.get_cart_total }}</th>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+
+</div>
+
+
+</div>
+
+{% endblock %}
