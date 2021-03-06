@@ -70,29 +70,19 @@ def validate_form(request):
     if request.method == "POST":
         form = ShippingForm(request.POST)
 
-        # if request.user.is_authenticated:
-        #     customer = request.user.customer
-        # else:
-        #     session_key = return_session(request)
-        #     customer, created = Customer.objects.get_or_create(as_guest=session_key)
-
         order, items, customer = return_order_and_items(request)
         if customer.as_guest:
-
+            # update his email and name if submitted
             if request.POST.get('name'):
                 name = request.POST.get('name')
                 customer.name = name
-
             if request.POST.get('email'):
                 email = request.POST.get('email')
                 email_query = User.objects.filter(email=email)
                 if email_query:
                     return JsonResponse(status=400, data={'error': 'This email is already occupied, try another'})
                 customer.email = email
-
             customer.save()
-
-        # order = customer.order_set.get(customer=customer, complete=False)
 
         if order.shipping:
             if form.is_valid():
@@ -101,9 +91,7 @@ def validate_form(request):
                 phone = request.POST.get('phone')
 
                 update = {'address': address, 'city': city, 'phone': phone}
-
                 ShippingAddress.objects.update_or_create(customer=customer, order=order, defaults=update)
-
                 return JsonResponse('ok', safe=False, status=200)
             else:
                 return JsonResponse(status=400, data={'error': 'You must provide shipping address'})
