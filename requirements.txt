@@ -3,6 +3,7 @@ autopep8==1.5.4
 certifi==2020.12.5
 chardet==4.0.0
 Django==3.1.4
+django-environ==0.4.5
 djangorestframework==3.12.2
 Pillow==8.1.2
 pycodestyle==2.6.0

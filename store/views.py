@@ -110,7 +110,8 @@ def completed_order(request):
     """
     order, items, customer = return_order_and_items(request)
     # order.transaction_id = take_this_from_payment_response
-    order.complete = True
+    # order.complete = True
+    # order.paid = True
     order.save()
 
     context = {'items': items, 'order': order}

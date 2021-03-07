@@ -6,3 +6,4 @@ guide.txt
 *.pyc
 *~
 *.swp
+.env

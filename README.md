@@ -16,4 +16,21 @@ Coming improvements:
 3. Dockerfile.
 4. More tests.
 5. Admin panel improvements (customization).
-6. Password resetting via emails.
+
+How to run: 
+1. Configure your SMPT credentials in .env file in ecommerce folder. 
+Required variables:
+- EMAIL_HOST_USER=your_email
+- EMAIL_HOST_PASSWORD=your_password
+2. Run in command line: 
+
+    git clone https://github.com/artemchege/django-ecommerce
+
+3. Then run: 
+
+    python manage.py runserver 
+    
+4. Or in Docker: 
+
+    later
+    
