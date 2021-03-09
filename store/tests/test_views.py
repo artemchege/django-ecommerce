@@ -73,21 +73,21 @@ class TestViews(TestCase):
         product = self.make_product()
 
         # invalid id
-        response = self.client.post(self.update_url, {'id': '10', 'action': 'add'})
+        response = self.client.post(self.update_url, {'id': 10, 'action': 'add'})
         self.assertEqual(response.status_code, 422)
 
         # invalid action
-        response = self.client.post(self.update_url, {'id': '1', 'action': 'lol'})
+        response = self.client.post(self.update_url, {'id': product.id, 'action': 'lol'})
         self.assertEqual(response.status_code, 422)
 
         # valid id and action count +
-        response = self.client.post(self.update_url, {'id': '1', 'action': 'add'})
+        response = self.client.post(self.update_url, {'id': product.id, 'action': 'add'})
         self.assertEqual(response.status_code, 200)
         order_item_count = models.OrderItem.objects.all().count()
         self.assertEqual(order_item_count, 1)
 
         # valid id and action count -
-        response = self.client.post(self.update_url, {'id': '1', 'action': 'remove'})
+        response = self.client.post(self.update_url, {'id': product.id, 'action': 'remove'})
         self.assertEqual(response.status_code, 200)
         order_item_count = models.OrderItem.objects.all().count()
         self.assertEqual(order_item_count, 0)
