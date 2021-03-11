@@ -29,7 +29,7 @@ SECRET_KEY = 'bq6ip+($p@3i)i_oaox+@2z6kc+@6gtw)pjjd5adfe+h8)ynr#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'ecommerce-pure-django.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'ecommerce-pure-django.herokuapp.com', '109.237.25.179']
 
 
 # Application definition

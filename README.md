@@ -8,7 +8,7 @@ Used technologies:
 1. Bootstrap.
 2. jQuery ajax.
 3. Signals.
-4. Selenium (a little).
+4. Selenium.
 5. PostgreSQL integration: Amazon web services (AWS). 
 6. AWS S3 integration for static files. 
 7. Stripe as payment system.
@@ -23,7 +23,7 @@ Coming improvements:
 
 How to run: 
 
-Firstly configure your SMPT credentials (gmail config) in .env file in ecommerce folder. 
+1. Сonfigure your SMPT credentials (gmail config) in .env file in ecommerce folder. 
 Required variables:
 - EMAIL_HOST_USER=your_email
 - EMAIL_HOST_PASSWORD=your_password
@@ -38,18 +38,19 @@ In case you are going to use Amazon services:
 
 Stripe secret_key:
 - STRIPE_SECRET_KEY=your_key
-2) Run in command line: 
+2. Edit ALLOWED_HOST = []
+3. Run in command line: 
 
     git clone https://github.com/artemchege/django-ecommerce
 
-3) Then run (Windows compatible): 
+4. Then run (Windows compatible): 
 
     python manage.py runserver 
     
-4) Or in Docker: 
+5. Or in Docker: 
 
     later
     
 Deployed on Heroku: https://ecommerce-pure-django.herokuapp.com/
 
-(!) On heroku Stripe confirmation does not work because there is no SSL configured on free heroku plan. 
+(!) On heroku Stripe confirmation does not work because there is no SSL configured on due to free heroku plan. 
