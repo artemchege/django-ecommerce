@@ -12,12 +12,15 @@ Used technologies:
 5. PostgreSQL integration: Amazon web services (AWS). 
 6. AWS S3 integration for static files. 
 7. Stripe as payment system.
+8. Whitenoise + gunicorn.
+9. Heroku config.
 
 Coming improvements:
-3. Dockerfile.
-4. More tests.
-5. Admin panel improvements (customization).
-6. Heroku config.
+
+1. Dockerfile.
+2. More tests.
+3. Admin panel improvements (customization).
+4. Heroku config.
 
 How to run: 
 

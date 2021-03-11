@@ -87,7 +87,7 @@ class TestStorePage(StaticLiveServerTestCase):
         city_field.send_keys('test city')
         phone_field.send_keys('test phone')
         submit_button.click()
-        time.sleep(1)
+        time.sleep(5)  # time to load button due to slow chromedriver
         self.wait_func(stripe_button.click)
 
         # fill the payments form
