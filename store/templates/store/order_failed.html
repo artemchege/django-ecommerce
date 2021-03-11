@@ -1,0 +1,50 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                    <p style="text-align: center;">{{ message }}</p>
+                </div>
+            {% endfor %}
+
+            <img class="image" style="width:100px;" src="{% static 'store/completed.png' %}">
+            <p style="text-align: center;">Your order with number {{ order.id }} <strong>was not</strong> paid!</p>
+            <p style="text-align: center;">Try again</p>
+            <a href="{% url 'checkout' %}" class="btn btn-block btn-primary">Checkout page</a>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a  class="btn btn-outline-dark" href="{% url 'orders' %}">History of orders</a>
+            <hr>
+            <h3>Order Summary</h3>
+            <hr>
+            {% for item in items %}
+            <div class="cart-row">
+                {% if item.product.image %}
+                    <div style="flex:2"><img class="row-image" src="{{ item.product.image.url }}"></div>
+                {% else %}
+                    <div style="flex:2"><img class="row-image" src="{% static 'store/placeholder.png' %}"></div>
+                {% endif %}
+                <div style="flex:2"><p>{{ item.product.name }}</p></div>
+                <div style="flex:1"><p>{{ item.product.price }}</p></div>
+                <div style="flex:1"><p>x{{ item.quantity }}</p></div>
+            </div>
+            {% endfor %}
+            <h5>Items:   {{ order.get_item_total }}</h5>
+            <h5>Total:   ${{ order.get_cart_total }}</h5>
+        </div>
+    </div>
+
+</div>
+
+
+</div>
+
+{% endblock %}

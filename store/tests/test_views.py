@@ -14,11 +14,16 @@ class TestViews(TestCase):
         self.checkout_url = reverse('checkout')
         self.update_url = reverse('update')
         self.validate_form_url = reverse('validate_form')
-        self.order_url = reverse('order')
+        self.order_paid = reverse('order_paid')
+        self.failed_paid = reverse('failed_paid')
         self.orders_url = reverse('orders')
         self.login_url = reverse('login')
         self.logout_url = reverse('logout')
         self.registration_url = reverse('registration')
+        self.create_checkout_session = reverse('create-checkout-session')
+        self.reset_password = reverse('reset_password')
+        self.password_reset_done = reverse('password_reset_done')
+        self.reset_password_complete = reverse('password_reset_complete')
 
         self.username = 'root'
         self.password = 'azaza2222'
@@ -127,12 +132,30 @@ class TestViews(TestCase):
         self.assertEqual(response.status_code, 405)
 
     def test_store_completed_order_GET(self):
-        response = self.client.get(self.order_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'store/order.html')
+        # visit page without session_id in GET:
+        response = self.client.get(self.order_paid)
+        self.assertEqual(response.status_code, 302)
 
-    def test_store_completed_orders_POST(self):
-        # вернуться сюда когда настрою stripe и протестировать сразу нормально без костылей
+        # visit page with invalid session_id in GET:
+        response = self.client.get(self.order_paid + '?session_id=wrong')
+        self.assertEqual(response.status_code, 302)
+
+        # visit page with valid session_id in functional_tests (selenium)
+        # self.assertTemplateUsed(response, 'store/order.html')
+
+    def test_store_failed_order_GET(self):
+        response = self.client.get(self.failed_paid)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'store/order_failed.html')
+
+    def test_store_create_checkout_session_GET(self):
+        response = self.client.get(self.create_checkout_session)
+        self.assertEqual(response.status_code, 405)
+
+    def test_store_create_checkout_session_POST(self):
+        # error due to request.META['HTTP_HOST']
+        # in test environment there is no request.META['HTTP_HOST']
+        # this view will be tested in functional_tests (selenium)
         pass
 
     def test_store_registration_view_GET(self):
@@ -192,12 +215,20 @@ class TestViews(TestCase):
         response = self.client.get(self.logout_url)
         self.assertEqual(response.status_code, 302)
 
+    def test_store_reset_password(self):
+        response = self.client.get(self.reset_password)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'store/password_reset.html')
 
+    def test_store_reset_password_done(self):
+        response = self.client.get(self.password_reset_done)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'store/password_reset_sent.html')
 
-
-
-
-
+    def test_store_reset_password_complete(self):
+        response = self.client.get(self.reset_password_complete)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'store/reset_password_complete.html')
 
 
 

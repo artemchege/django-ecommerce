@@ -27,7 +27,7 @@ class TestUrls(SimpleTestCase):
         resolved_url = resolve(url)
         self.assertEqual(resolved_url.func, views.validate_form)
 
-        url = reverse('order')
+        url = reverse('order_paid')
         resolved_url = resolve(url)
         self.assertEqual(resolved_url.func, views.completed_order)
 

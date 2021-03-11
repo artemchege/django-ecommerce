@@ -9,6 +9,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from .decorators import if_unauthenticated
+from django.urls import reverse
+from django.conf import settings
+import stripe
+import math
 
 
 def store(request):
@@ -72,7 +76,7 @@ def validate_form(request):
 
         order, items, customer = return_order_and_items(request)
         if customer.as_guest:
-            # update his email and name if submitted
+            # update his/her email and name if submitted
             if request.POST.get('name'):
                 name = request.POST.get('name')
                 customer.name = name
@@ -102,20 +106,36 @@ def validate_form(request):
 
 
 def completed_order(request):
-    """
-    Future improvements: when payment methods are added, make query with paid=True, and change get_or_create on
-    just get(). Moreover take transaction ID from payment widget and write it into DB.
-    :param request:
-    :return: render template
-    """
+    session_id = request.GET.get('session_id')
+    if session_id:
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+        except Exception as e:  # InvalidRequestError
+            messages.success(request, f'Paid information with Stripe session was not found: {e}')
+            return redirect(reverse('failed_paid'))
+
+        if session.payment_status == 'paid':
+            order, items, customer = return_order_and_items(request)
+            order.transaction_id = session.payment_intent
+            order.complete = True
+            order.paid = True
+            order.save()
+
+            context = {'items': items, 'order': order}
+            return render(request, 'store/order.html', context)
+        else:
+            messages.success(request, f'The order was now paid correctly')
+            return redirect(reverse('failed_paid'))
+
+    messages.success(request, f'You must provide session_id via GET request')
+    return redirect(reverse('failed_paid'))
+
+
+def failed_order(request):
     order, items, customer = return_order_and_items(request)
-    # order.transaction_id = take_this_from_payment_response
-    # order.complete = True
-    # order.paid = True
-    order.save()
 
     context = {'items': items, 'order': order}
-    return render(request, 'store/order.html', context)
+    return render(request, 'store/order_failed.html', context)
 
 
 def completed_orders(request):
@@ -172,3 +192,37 @@ def logout_view(request):
     return redirect('login')
 
 
+def create_checkout_session(request):
+    """
+    Endpoint for Stripe, creates a session, returns session id.
+    :param request:
+    :return: JSON
+    """
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    order, items, customer = return_order_and_items(request)
+
+    if request.method == 'POST':
+        # https for production
+        success_url = 'http://' + request.META['HTTP_HOST'] + reverse('order_paid') + '?session_id={CHECKOUT_SESSION_ID}'
+        fail_url = 'http://' + request.META['HTTP_HOST'] + reverse('failed_paid')
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+              'price_data': {
+                'currency': 'usd',
+                'product_data': {
+                  'name': item.product.name,
+                },
+                'unit_amount': math.floor(item.product.price*100),  # cents
+              },
+              'quantity': item.quantity,
+            } for item in items],
+            mode='payment',
+            success_url=success_url,
+            cancel_url=fail_url,
+        )
+
+        return JsonResponse(data={'id': session.id}, safe=False, status=200)
+
+    return JsonResponse(status=405, data={'error': 'you must provide post request'})

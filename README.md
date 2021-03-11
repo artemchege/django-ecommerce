@@ -11,12 +11,13 @@ Used technologies:
 4. Selenium (a little).
 5. PostgreSQL integration: Amazon web services (AWS). 
 6. AWS S3 integration for static files. 
+7. Stripe as payment system.
 
 Coming improvements:
-1. Stripe integration.
 3. Dockerfile.
 4. More tests.
 5. Admin panel improvements (customization).
+6. Heroku config.
 
 How to run: 
 
@@ -31,8 +32,10 @@ In case you are going to use Amazon services:
 - AWS_PORT=your_data
 - AWS_HOST=your_data
 - AWS_ACCESS_KEY_ID=your_data
-
 - AWS_SECRET_ACCESS_KEY=your_data
+
+Stripe secret_key:
+- STRIPE_SECRET_KEY=your_key
 2) Run in command line: 
 
     git clone https://github.com/artemchege/django-ecommerce

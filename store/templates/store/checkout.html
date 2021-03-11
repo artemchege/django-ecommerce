@@ -3,53 +3,65 @@
 {% block content %}
      <div class="row">
 		<div class="col-lg-6">
+
 			<div class="box-element" id="form-wrapper">
-				<form id="form">
-					{% csrf_token %}
 
-					{% ifequal request.user.username ''%}
-						<div id="user-info">
-							<div class="form-field">
-								<input required class="form-control" type="text" name="name" placeholder="Name...">
-							</div>
-							<div class="form-field">
-								<input required class="form-control" type="email" name="email" placeholder="Email...">
-							</div>
-						</div> <hr>
-					{% endifequal %}
+				{% if items %}
+					<form id="form">
+						{% csrf_token %}
 
-					{% if order.shipping %}
+						{% ifequal request.user.username ''%}
+							<div id="user-info">
+								<p style="text-align:center;">You can introduce yourself, if you want. Your data will be needed in case something unexpected happens, so we could interact with you.</p>
+								<div class="form-field">
+									<input required class="form-control" type="text" name="name" placeholder="Name...">
+								</div>
+								<div class="form-field">
+									<input required class="form-control" type="email" name="email" placeholder="Email...">
+								</div>
+							</div> <hr>
+						{% endifequal %}
 
-					<div class="alert alert-danger hidden" role="alert">
-						The error will be filled by JS code
-					</div>
+						{% if order.shipping %}
 
-					<div id="shipping-info">
-						<p>Shipping Information:</p>
+						<div class="alert alert-danger hidden" role="alert">
+							The error will be filled by JS code
+						</div>
+
+						<div id="shipping-info">
+							<p>Shipping Information:</p>
+							<hr>
+							{% for i in shipping_form %}
+								<div class="form-field">
+									{{ i.label }} <br>
+									{{ i }}
+								</div>
+							{% endfor %}
+						</div>
+						{% else %}
+
+						<p style="text-align:center">There is no need for shopping information.</p>
+
+						{% endif %}
+
 						<hr>
-						{% for i in shipping_form %}
-							<div class="form-field">
-								{{ i.label }} <br>
-								{{ i }}
-							</div>
-						{% endfor %}
-					</div>
+						<input id="form-button" class="btn btn-success btn-block" type="button" value="Continue">
+					</form>
+				{% else %}
 
-					{% endif %}
+					<p style="text-align:center;">You must have some items in your cart to proceed</p>
+					<a href="{% url 'store' %}" class="btn btn-primary btn-block">Back to shop</a>
 
-					<hr>
-					<input id="form-button" class="btn btn-success btn-block" type="button" value="Continue">
-				</form>
+				{% endif %}
 			</div>
 
 			<br>
 			<div class="box-element hidden" id="payment-info">
-				<p>
-					Place for payment integrations. Lets suppose that everything went ok, you can check result of your
-					order pressing the button below.
+				<p style="text-align:center;">
+					Your order is ready for payment, you can proceed by clicking the button bellow.
 				</p>
 				<br>
-				<a id="make-payment" class="btn btn-success btn-block" href="/order">My order</a>
+				<button id="checkout-button" class="btn btn-success btn-block">Make payment at Stripe</button>
 			</div>
 
 		</div>
@@ -77,4 +89,30 @@
 			</div>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		var stripe = Stripe('pk_test_51IT6IwHbJhOfoAEvYBPNjlpDboyqz87KN0M3EZ3eBTwZCjACXXRRfiPB598KGbTkVE563k7lyxxUlLMdTYuIYz0200Qideg8UN');
+		var checkoutButton = document.getElementById('checkout-button');
+
+		checkoutButton.addEventListener('click', function() {
+		fetch('/create-checkout-session/', {
+		  method: 'POST',
+		  headers: {'Content-Type': 'application/json', 'X-CSRFToken': csrftoken},
+		})
+		.then(function(response) {
+		  return response.json();
+		})
+		.then(function(session) {
+		  return stripe.redirectToCheckout({ sessionId: session.id });
+		})
+		.then(function(result) {
+		  if (result.error) {
+			alert(result.error.message);
+		  }
+		})
+		.catch(function(error) {
+		  console.log('Error:', error);
+		});
+		});
+    </script>
 {% endblock content %}
