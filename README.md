@@ -20,7 +20,6 @@ Coming improvements:
 1. Dockerfile.
 2. More tests.
 3. Admin panel improvements (customization).
-4. Heroku config.
 
 How to run: 
 
