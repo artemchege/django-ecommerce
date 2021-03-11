@@ -41,7 +41,7 @@ Stripe secret_key:
 2. Edit ALLOWED_HOST = []
 3. Run in command line: 
 
-    git clone https://github.com/artemchege/django-ecommerce
+    git clone https://github.com/artemchege/django-ecommerce .
 
 4. Then run (Windows compatible): 
 
@@ -49,7 +49,36 @@ Stripe secret_key:
     
 5. Or in Docker: 
 
-    later
+    git clone https://github.com/artemchege/django-ecommerce .
+    
+    docker build -t django-ecommerce 
+    
+    Then if Django dev server:
+    
+    docker run -p 8001:8001 -e EMAIL_HOST_USER=your_data
+                            -e EMAIL_HOST_PASSWORD=your data
+                            -e AWS_USER=your_data
+                            -e AWS_PASSWORD=your_data
+                            -e AWS_PORT=your_data
+                            -e AWS_HOST=your_data
+                            -e AWS_ACCESS_KEY_ID=your_data
+                            -e AWS_SECRET_ACCESS_KEY=your_data
+                            -e STRIPE_SECRET_KEY=your_data
+    django-ecommerce -d python manage.py runserver 0.0.0.0:8001
+                            
+    Or if gunicorn server: 
+    
+    docker run -p 8001:8001 -e EMAIL_HOST_USER=your_data
+                        -e EMAIL_HOST_PASSWORD=your data
+                        -e AWS_USER=your_data
+                        -e AWS_PASSWORD=your_data
+                        -e AWS_PORT=your_data
+                        -e AWS_HOST=your_data
+                        -e AWS_ACCESS_KEY_ID=your_data
+                        -e AWS_SECRET_ACCESS_KEY=your_data
+                        -e STRIPE_SECRET_KEY=your_data
+    django-ecommerce -d gunicorn --bind 0.0.0.0:8001 --workers 3 ecommerce.wsgi
+                        
     
 Deployed on Heroku: https://ecommerce-pure-django.herokuapp.com/
 
