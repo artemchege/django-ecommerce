@@ -14,12 +14,12 @@ Used technologies:
 7. Stripe as payment system.
 8. Whitenoise + gunicorn.
 9. Heroku config.
+10. Dockerfile.
 
 Coming improvements:
 
-1. Dockerfile.
-2. More tests.
-3. Admin panel improvements (customization).
+1. More tests.
+2. Admin panel improvements (customization).
 
 How to run: 
 
@@ -42,7 +42,7 @@ Stripe secret_key:
 
     git clone https://github.com/artemchege/django-ecommerce
 
-3) Then run: 
+3) Then run (Windows compatible): 
 
     python manage.py runserver 
     
@@ -50,3 +50,6 @@ Stripe secret_key:
 
     later
     
+Deployed on Heroku: https://ecommerce-pure-django.herokuapp.com/
+
+(!) On heroku Stripe confirmation does not work because there is no SSL configured on free heroku plan. 
