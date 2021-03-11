@@ -64,7 +64,7 @@ Stripe secret_key:
                             -e AWS_ACCESS_KEY_ID=your_data
                             -e AWS_SECRET_ACCESS_KEY=your_data
                             -e STRIPE_SECRET_KEY=your_data
-    django-ecommerce -d python manage.py runserver 0.0.0.0:8001
+    django-ecommerce -d python manage.py runserver 0.0.0.0:8001 
                             
     Or if gunicorn server: 
     
